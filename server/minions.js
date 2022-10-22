@@ -48,4 +48,15 @@ minionsRouter.delete("/:minionsId", (req, res, next) => {
     }
 })
 
+//work endpoints UNFINISHED
+// minionsRouter.get("/:minionsId/work", (req, res, next) => {
+//     let work = getFromDatabaseById("work", req.params.minionsId);
+
+//     if (work) {
+//         res.send(work);
+//     } else {
+//         res.status(404).send();
+//     }
+// })
+
 module.exports = minionsRouter;

@@ -1,6 +1,19 @@
 const express = require("express");
 const { getAllFromDatabase, getFromDatabaseById, addToDatabase, updateInstanceInDatabase, deleteFromDatabasebyId} = require("./db.js");
+const checkMillionDollarIdea = require("./checkMillionDollarIdea.js");
 const ideasRouter = express.Router();
+
+/*I think this middleware is unnecessary, but it is necessary to pass the conditions of
+the tests (which I think are incorrect) which fail because of checkMillionDolalrIdea*/
+ideasRouter.param("ideasId", (req, res, next, id) => {
+    let idea = getFromDatabaseById("ideas", id);
+    if (idea) {
+        req.idea = idea;
+        next();
+    } else {
+        res.status(404).send()
+    }
+})
 
 ideasRouter.get("/", (req, res, next) => {
     let ideas = getAllFromDatabase("ideas");
@@ -8,15 +21,10 @@ ideasRouter.get("/", (req, res, next) => {
 })
 
 ideasRouter.get("/:ideasId", (req, res, next) => {
-    let idea = getFromDatabaseById("ideas", req.params.ideasId);
-    if (idea) {
-        res.send(idea);
-    } else {
-        res.status(404).send();
-    }
+    res.send(req.idea);
 })
 
-ideasRouter.post("", (req, res, next) => {
+ideasRouter.post("", checkMillionDollarIdea, (req, res, next) => {
     let body = req.body;
     try {
         let newIdea = addToDatabase("ideas", body);
@@ -26,7 +34,7 @@ ideasRouter.post("", (req, res, next) => {
     }
 })
 
-ideasRouter.put("/:ideaId", (req, res, next) => {
+ideasRouter.put("/:ideasId", checkMillionDollarIdea, (req, res, next) => {
     let body = req.body;
     try {
         let updatedIdea = updateInstanceInDatabase("ideas", body);
